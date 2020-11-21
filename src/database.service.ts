@@ -1,24 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as sqlite from 'sqlite';
-
+import * as sqlite from 'sqlite3';
+import { open, Database } from 'sqlite';
 @Injectable()
 export class DatabaseService {
-  private database: sqlite.Database;
+  private database: Database;
   async onModuleInit() {
     try {
       const dbPath = path.resolve('./database.sqlite');
-      this.database = fs.existsSync(dbPath)
+      console.log(
+        `Database ${
+          fs.existsSync(dbPath) ? 'EXISTS' : 'DOES NOT EXIST'
+        } at ${dbPath}`,
+      );
+      const db = fs.existsSync(dbPath)
         ? await this.openDatabase(dbPath)
         : await this.createDatabase(dbPath);
+      this.database = await db;
+      console.log(`The database has been opened successfully`, this.database);
     } catch (e) {
       console.error(e.message);
     }
   }
 
   private async openDatabase(dbPath: string) {
-    return sqlite.open({
+    return open({
       filename: dbPath,
       driver: sqlite.Database,
     });

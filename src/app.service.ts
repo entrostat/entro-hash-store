@@ -22,6 +22,7 @@ export class AppService {
   async get(key: string) {
     return this.databaseService
       .getDatabaseInstance()
-      .get(`SELECT value FROM key_values WHERE key = ?`, key);
+      .get(`SELECT value FROM key_values WHERE key = ?`, key)
+      .then((result) => result?.value);
   }
 }

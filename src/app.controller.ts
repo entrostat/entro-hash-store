@@ -10,11 +10,14 @@ export class AppController {
     @Param('key') key: string,
     @Param('value') value: string,
   ) {
+    console.log(`Setting ${key} to ${value}`);
     return this.appService.set(key, value);
   }
 
   @Get(':key')
   async getValue(@Param('key') key: string) {
-    return this.appService.get(key);
+    const value = await this.appService.get(key);
+    console.log(`Retrieved ${key} returned ${value}`);
+    return value;
   }
 }
