@@ -5,9 +5,10 @@ import * as sqlite from 'sqlite';
 
 @Injectable()
 export class DatabaseService {
+  private database: sqlite.Database;
   async onModuleInit() {
     const dbPath = path.resolve('./database.sqlite');
-    fs.existsSync(dbPath)
+    this.database = fs.existsSync(dbPath)
       ? await this.openDatabase(dbPath)
       : await this.createDatabase(dbPath);
   }
@@ -22,7 +23,7 @@ export class DatabaseService {
 
   private async createDatabase(dbPath: string) {
     console.log(`Create a new database at ${dbPath}`);
-    return Promise.resolve()
+    await Promise.resolve()
       .then(() =>
         sqlite.open({
           filename: dbPath,
@@ -37,5 +38,10 @@ export class DatabaseService {
           'CREATE TABLE blacklisted_tokens (id INTEGER PRIMARY KEY, token TEXT)',
         );
       });
+    return this.openDatabase(dbPath);
+  }
+
+  getDatabaseInstance() {
+    return this.database;
   }
 }
