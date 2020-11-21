@@ -32,7 +32,7 @@ export class DatabaseService {
       )
       .then(async (db) => {
         await db.exec(
-          'CREATE TABLE key_values (id INTEGER PRIMARY KEY, key TEXT, value TEXT)',
+          'CREATE TABLE key_values (key TEXT PRIMARY KEY, value TEXT)',
         );
       });
     return this.openDatabase(dbPath);
