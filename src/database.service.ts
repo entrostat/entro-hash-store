@@ -34,9 +34,6 @@ export class DatabaseService {
         await db.exec(
           'CREATE TABLE key_values (id INTEGER PRIMARY KEY, key TEXT, value TEXT)',
         );
-        await db.exec(
-          'CREATE TABLE blacklisted_tokens (id INTEGER PRIMARY KEY, token TEXT)',
-        );
       });
     return this.openDatabase(dbPath);
   }
