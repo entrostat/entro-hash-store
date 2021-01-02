@@ -32,7 +32,7 @@ export class DatabaseService implements OnModuleInit {
       );
       this.logger.info(
         `The tokens are as follows`,
-        await db.exec(`SELECT * FROM tokens`),
+        await db.get(`SELECT * FROM tokens`),
       );
     } catch (e) {
       this.logger.error(e.message);
