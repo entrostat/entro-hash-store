@@ -1,7 +1,8 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { AuthGuard } from './auth.guard';
 import { LoggerService } from './logger.service';
+import { isString } from 'lodash';
 
 @Controller('hash')
 @UseGuards(AuthGuard)
@@ -16,6 +17,13 @@ export class AppController {
     @Param('key') key: string,
     @Param('value') value: string,
   ) {
+    this.logger.info(`Setting ${key} to ${value}`);
+    return this.appService.set(key, value);
+  }
+
+  @Post(':key')
+  async setValueByPostRequest(@Param('key') key: string, @Body() body: any) {
+    const value = isString(body) ? body : JSON.stringify(body);
     this.logger.info(`Setting ${key} to ${value}`);
     return this.appService.set(key, value);
   }
