@@ -1,6 +1,4 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import * as path from 'path';
-import * as fs from 'fs-extra';
 import * as sqlite from 'sqlite3';
 import { open, Database } from 'sqlite';
 import { v4 as uuid } from 'uuid';
@@ -14,7 +12,7 @@ export class DatabaseService implements OnModuleInit {
 
   async onModuleInit() {
     try {
-      const db = await this.createDatabase(':memory:');
+      const db = await this.createDatabase();
       this.database = await db;
       this.logger.info(
         `The database has been opened successfully`,
@@ -25,17 +23,16 @@ export class DatabaseService implements OnModuleInit {
     }
   }
 
-  private async openDatabase(dbPath: string) {
+  private async openDatabase() {
     return open({
-      filename: dbPath,
+      filename: ':memory:',
       driver: sqlite.Database,
     });
   }
 
-  private async createDatabase(dbPath: string) {
-    this.logger.info(`Create a new database at ${dbPath}`);
-    await fs.writeFile(dbPath, '');
-    await this.openDatabase(dbPath).then(async (db) => {
+  private async createDatabase() {
+    this.logger.info(`Create a new database at :memory:`);
+    await this.openDatabase().then(async (db) => {
       await db.exec(
         `CREATE TABLE key_values (key TEXT PRIMARY KEY, value TEXT)`,
       );
@@ -44,7 +41,7 @@ export class DatabaseService implements OnModuleInit {
       await db.exec(`INSERT INTO tokens VALUES ('${initToken}')`);
       this.logger.info(`Created the initial token\n\n\n${initToken}\n\n`);
     });
-    return this.openDatabase(dbPath);
+    return this.openDatabase();
   }
 
   getDatabaseInstance() {
