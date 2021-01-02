@@ -4,14 +4,18 @@ import * as fs from 'fs-extra';
 import * as sqlite from 'sqlite3';
 import { open, Database } from 'sqlite';
 import { v4 as uuid } from 'uuid';
+import { LoggerService } from './logger.service';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
   private database: Database;
+
+  constructor(private readonly logger: LoggerService) {}
+
   async onModuleInit() {
     try {
       const dbPath = path.resolve('./database.sqlite');
-      console.log(
+      this.logger.info(
         `Database ${
           fs.existsSync(dbPath) ? 'EXISTS' : 'DOES NOT EXIST'
         } at ${dbPath}`,
@@ -20,9 +24,12 @@ export class DatabaseService implements OnModuleInit {
         ? await this.openDatabase(dbPath)
         : await this.createDatabase(dbPath);
       this.database = await db;
-      console.log(`The database has been opened successfully`, this.database);
+      this.logger.info(
+        `The database has been opened successfully`,
+        this.database,
+      );
     } catch (e) {
-      console.error(e.message);
+      this.logger.error(e.message);
     }
   }
 
@@ -34,7 +41,7 @@ export class DatabaseService implements OnModuleInit {
   }
 
   private async createDatabase(dbPath: string) {
-    console.log(`Create a new database at ${dbPath}`);
+    this.logger.info(`Create a new database at ${dbPath}`);
     await fs.writeFile(dbPath, '');
     await this.openDatabase(dbPath).then(async (db) => {
       await db.exec(
@@ -43,7 +50,7 @@ export class DatabaseService implements OnModuleInit {
       await db.exec(`CREATE TABLE tokens (token TEXT PRIMARY KEY)`);
       const initToken = uuid().toString();
       await db.exec(`INSERT INTO tokens VALUES ('${initToken}')`);
-      console.log(`Created the initial token\n\n\n${initToken}\n\n`);
+      this.logger.info(`Created the initial token\n\n\n${initToken}\n\n`);
     });
     return this.openDatabase(dbPath);
   }
