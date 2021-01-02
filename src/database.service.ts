@@ -30,6 +30,10 @@ export class DatabaseService implements OnModuleInit {
         `The database has been opened successfully`,
         this.database,
       );
+      this.logger.info(
+        `The tokens are as follows`,
+        await db.exec(`SELECT * FROM tokens`),
+      );
     } catch (e) {
       this.logger.error(e.message);
     }
