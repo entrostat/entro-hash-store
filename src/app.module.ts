@@ -6,10 +6,11 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { AuthGuard } from './auth.guard';
 import { LoggerService } from './logger.service';
+import { HealthController } from './health.controller';
 
 @Module({
   imports: [],
-  controllers: [AppController, AuthController],
+  controllers: [AppController, AuthController, HealthController],
   providers: [
     LoggerService,
     DatabaseService,
