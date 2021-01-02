@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as sqlite from 'sqlite3';
 import { open, Database } from 'sqlite';
+import { v4 as uuid } from 'uuid';
+
 @Injectable()
-export class DatabaseService {
+export class DatabaseService implements OnModuleInit {
   private database: Database;
   async onModuleInit() {
     try {
@@ -36,8 +38,12 @@ export class DatabaseService {
     await fs.writeFile(dbPath, '');
     await this.openDatabase(dbPath).then(async (db) => {
       await db.exec(
-        'CREATE TABLE key_values (key TEXT PRIMARY KEY, value TEXT)',
+        `CREATE TABLE key_values (key TEXT PRIMARY KEY, value TEXT)`,
       );
+      await db.exec(`CREATE TABLE tokens (token TEXT PRIMARY KEY)`);
+      const initToken = uuid().toString();
+      await db.exec(`INSERT INTO tokens VALUES ('${initToken}')`);
+      console.log(`Created the initial token\n\n\n${initToken}\n\n`);
     });
     return this.openDatabase(dbPath);
   }
