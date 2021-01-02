@@ -14,15 +14,7 @@ export class DatabaseService implements OnModuleInit {
 
   async onModuleInit() {
     try {
-      const dbPath = path.resolve('./database.sqlite');
-      this.logger.info(
-        `Database ${
-          fs.existsSync(dbPath) ? 'EXISTS' : 'DOES NOT EXIST'
-        } at ${dbPath}`,
-      );
-      const db = fs.existsSync(dbPath)
-        ? await this.openDatabase(dbPath)
-        : await this.createDatabase(dbPath);
+      const db = await this.createDatabase(':memory:');
       this.database = await db;
       this.logger.info(
         `The database has been opened successfully`,
